@@ -130,12 +130,22 @@ proc multinomial[T](probs: Tensor[T], numSamples: int): Tensor[int] =
 # let ix = p.sample()
 # echo itos[ix]
 
-for i in 0 ..< 100:
+var P = N.map(x => x.float)
+
+
+for i in 0 ..< 28:
+  let row = P[i, _]
+  echo i, ":", sum(row)
+  P[i, _] = row / sum(row)
+
+# echo "sum zero axis? ", P.cumsum(0)[27, _]
+# P = P / (P.cumsum(0)[27, _])
+
+for i in 0 ..< 20:
   var name = ""
   var ix = 0
   while true:
-    var p = N[ix, _].reshape([28]).map(x => x.float)
-    p = p / sum(p)
+    var p = P[ix, _].reshape([28])
     ix = p.sample()
     name.add(itos[ix])
     if ix == 0:
